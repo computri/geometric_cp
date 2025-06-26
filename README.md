@@ -72,6 +72,7 @@ cd your-repo-name
 
 ```
 export HYDRA_JOBS='./hydra_jobs'
+export WANDB_DIR="./wandb"
 export WANDB_ENTITY='computri'
 export WANDB_PROJECT='cp2'
 export WANDB_CACHE_DIR='./wandb_cache'
