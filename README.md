@@ -71,13 +71,13 @@ cd your-repo-name
 2. Set environment variables, for example: 
 
 ```
-export HYDRA_JOBS='./hydra_jobs'
+export HYDRA_JOBS="./hydra_jobs"
 export WANDB_DIR="./wandb"
-export WANDB_ENTITY='computri'
-export WANDB_PROJECT='cp2'
-export WANDB_CACHE_DIR='./wandb_cache'
-export DATA_PATH='./data'
-export CHECKPOINT_PATH='./checkpoints'
+export WANDB_ENTITY="computri"
+export WANDB_PROJECT="cp2"
+export WANDB_CACHE_DIR="./wandb_cache"
+export DATA_PATH="./data"
+export CHECKPOINT_PATH="./checkpoints"
 ```
 
 3. Create and activate the Conda environment
