@@ -1,0 +1,10 @@
+dataset_name: cifar10 # Name of the dataset to use
+data_path: ${oc.env:DATA_PATH} # Path to the dataset
+augment: "small_rotations" # Which data augmentation to use. Options: "small_rotations": cont. rotations sampled [-5, 5] "so2": cont. rotations from SO(2) "autoaugment": autoaugment policy "c8": discrete rotations C8 "c4": discrete rotations C4 
+num_workers: 4 # Number of workers for data loading
+batch_size: 128 # Number of samples per batch
+cp_experiments:
+  class_conditional_joint: 0 #class conditional shift, used for MCP
+  shift_type: 'dirac'
+  rotation_distribution:
+    kappa: 1.0

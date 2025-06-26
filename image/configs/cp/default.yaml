@@ -1,0 +1,11 @@
+score_fn: APS # score function. Current available options: THR, APS
+alpha: 0.05 # error rate
+similarity_type: "crossentropy" #currently unused still
+weight_lambda: 1.0 # for weight calculation in weight cp. lambda in: w_tilde = 1/ (1 + lambda * d ** pow),
+weight_pow: 1.0 # for weight calculation in weight cp. pow in: w_tilde = 1/ (1 + lambda * d ** pow),
+num_resamples: 10 # number of resamples for cal/test splits
+canon_cutoff: 0.9
+mondrian:
+  partitioning: "none"
+weighted_cp:
+  shift_augment: "so2"
