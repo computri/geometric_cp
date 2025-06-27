@@ -25,7 +25,7 @@ This repository builds heavily on the following projects:
 
 
 ## Repo structure
-This repository extends [equiadapt](https://github.com/arnab39/equiadapt/tree/main) with conformal prediction functionality using components adapted from [TorchCP](https://github.com/ml-stat-Sustech/TorchCP). Below is an overview of the core folders and files:
+This repository extends [equiadapt](https://github.com/arnab39/equiadapt/tree/main) with conformal prediction functionality using components adapted from [TorchCP](https://github.com/ml-stat-Sustech/TorchCP). Below is an example overview of the core folders and files for the image experiments:
 
 <pre>
 image/
@@ -89,14 +89,14 @@ conda activate cp2
 
 4. Download model checkpoints
 
-We provide pretrained model checkpoints [**here**](https://drive.google.com/drive/folders/16bgg6Z4KoMpgQ1Jwz-huYb3tHZm08CRf?usp=sharing), and recommend placing them in the folder:
+We provide pretrained model checkpoints [**here**](https://drive.google.com/drive/folders/16bgg6Z4KoMpgQ1Jwz-huYb3tHZm08CRf?usp=sharing), and recommend placing them in the folder for the corresponding experiment:
 
-checkpoints/[dataset_name]/
+i.e. `images/checkpoints/[dataset_name]/base.ckpt`, `pointcloud/checkpoints/[dataset_name]/[canon_type]/[model_name]/base.ckpt`
 
 #### 📄 Naming conventions:
 - `base_*`: Standard models (normal predictors), optionally trained with data augmentation.
 - `base_c4.ckpt`, `base_c8.ckpt`: Models trained with C4 or C8 rotational symmetry (cyclic groups of order 4 or 8).
-- `base_so2.ckpt`: Model trained with continuous rotational symmetry (SO(2)).
+- `base_so2.ckpt`: Model trained with continuous rotational symmetry (SO(2), SO(3)).
 - `canon_*`: Models with canonicalization applied before classification. The postfix (e.g., `canon_c4`, `canon_c8`) indicates the canonicalization group.
 
 These models are used throughout the conformal prediction pipelines and reproduce results in the experiments.
@@ -106,11 +106,11 @@ These models are used throughout the conformal prediction pipelines and reproduc
 
 ## 🚀 Usage
 
-This project supports running experiments from the paper using different conformal prediction schemes. All experiments assume environment variables and checkpoints have been properly set up (see [Setup](#-setup)).
+This project supports running experiments from the paper using different conformal prediction schemes. All experiments assume environment variables and checkpoints have been properly set up (see [Setup](#-setup)). Make sure you `cd` into the appropriate experiment folder (image, pointcloud) from which to run the programs.
 
 ---
 
-### 🔁 Robustness Experiments
+### 🔁 Image Robustness Experiments
 
 Use `cp.py` for evaluating robustness under different canonicalization settings (i.e. Table 3, 6-9):
 
@@ -192,6 +192,29 @@ python weight_cp.py \
 -	Calibration data is automatically aligned with the canonicalizer (e.g. canon_c4 → c4 augment)
 -	Use cp.weighted_cp.shift_augment to simulate test-time shift beyond the calibration distribution
 
+⸻
+
+### 🔁 Point Cloud Robustness Experiments
+
+Use cp.py to evaluate robustness of point cloud models under different canonicalization and rotation settings (see Table 4):
+
+```
+python cp.py \
+  canonicalization=identity \
+  checkpoint.checkpoint_path=./checkpoints \
+  checkpoint.checkpoint_name=base \
+  experiment.run_mode=test \
+  prediction.prediction_network_architecture=dgcnn \
+  experiment.test.rotation_type=so3 \
+  hydra.job.chdir=False
+```
+
+📌 Notes:
+- Set prediction.prediction_network_architecture to dgcnn or pointnet to switch model backbones.
+- Use canonicalization=identity with checkpoint_name=base*, and canonicalization=group_equivariant with checkpoint_name=canon_*.
+- Set experiment.test.rotation_type to none or so3 to control test-time rotations.
+
+⸻
 
 #### Still open questions?
 
