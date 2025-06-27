@@ -110,7 +110,7 @@ This project supports running experiments from the paper using different conform
 
 ---
 
-### 🔁 Robustness Experiments (Table 1)
+### 🔁 Robustness Experiments
 
 Use `cp.py` for evaluating robustness under different canonicalization settings (i.e. Table 3, 6-9):
 
@@ -134,7 +134,7 @@ python cp.py \
 
 ⸻
 
-🧩 Mondrian Conformal Prediction (Table 2)
+🧩 Mondrian Conformal Prediction
 
 Use `mondrian_cp.py` for class-conditional and shifted data settings:
 
@@ -167,7 +167,7 @@ You can generate the relevant plots using `plots/mondrian_cp.ipynb`
 
 ⸻
 
-⚖️ Weighted Conformal Prediction (Table 3)
+⚖️ Weighted Conformal Prediction
 
 Run weight_cp.py for weighted CP:
 
