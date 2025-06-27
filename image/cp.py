@@ -8,11 +8,12 @@ import hydra
 from omegaconf import DictConfig
 
 from train_utils import (
-    get_model_data_and_callbacks,
+    get_model_pipeline,
     get_trainer,
     load_envs,
     get_cifar_dataset,
     setup_hyperparams,
+    get_num_labels
 )
 
 from cp.cp_pipelines import run_calibration_trials
@@ -28,9 +29,9 @@ def cp(hyperparams: DictConfig) -> None:
     pl.seed_everything(hyperparams.experiment.seed)
 
     # get model, callbacks, and image data
-    model, _, callbacks = get_model_data_and_callbacks(hyperparams)
+    model = get_model_pipeline(hyperparams)
     
-    num_labels = 100 if "100" in hyperparams.dataset.dataset_name else 10
+    num_labels = get_num_labels(hyperparams)
 
     print(f"Running {hyperparams.dataset.dataset_name} with {hyperparams.cp.score_fn}")
 
@@ -41,7 +42,7 @@ def cp(hyperparams: DictConfig) -> None:
     )
    
     # get trainer
-    trainer = get_trainer(hyperparams, callbacks, wandb_logger)
+    trainer = get_trainer(hyperparams, None, wandb_logger)
 
     _ = trainer.test(model, datamodule=image_data)
 
@@ -50,7 +51,6 @@ def cp(hyperparams: DictConfig) -> None:
 
     results = run_calibration_trials(
         model=model, 
-        # method="baseline",
         data_module=image_data, 
         num_resamples=hyperparams.cp.num_resamples,
         score_fn=hyperparams.cp.score_fn,

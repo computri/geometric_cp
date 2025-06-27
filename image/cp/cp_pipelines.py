@@ -3,7 +3,6 @@ import pickle
 import random
 from typing import Any, Dict, Optional, Tuple
 
-import matplotlib.pyplot as plt
 import numpy as np
 import torchcp
 
@@ -324,43 +323,27 @@ def run_mcp_trials(
 
     return results
 
+
 def run_wcp_trials(
-    model, 
-    alpha, 
-    data_module, 
-    num_resamples=10, 
-    num_classes=10, 
-    method="baseline", 
-    score_fn="APS", 
-    shifted_data_module=None, 
-    print_class_results=False,
-    print_partition_results=False,
-    subsample=False,
-    partitioning="none",
-    save_results=False,
-    **kwargs
-):
+    model: Any,
+    alpha: float,
+    data_module: Any,
+    num_resamples: int = 10,
+    num_classes: int = 10,
+    method: str = "baseline",
+    score_fn: str = "APS",
+    shifted_data_module: Optional[Any] = None,
+    print_class_results: bool = False,
+    print_partition_results: bool = False,
+    subsample: bool = False,
+    partitioning: str = "none",
+    save_results: bool = False,
+    **kwargs: Any
+) -> Dict[str, Tuple[float, float]]:
 
     print(kwargs)
 
     score_function = get_score_function(score_fn)
-
-    # if method == "baseline":
-        
-    #     cp_method = SplitPredictor(
-    #         score_function=score_function,
-    #         model=model,
-    #         num_classes=num_classes,
-    #         subsample=subsample,
-    #         target_partition=partitioning
-    #     )
-    # else:
-    #     cp_method = WeightedSplitPredictor(
-    #         score_function=score_function,
-    #         model=model,
-    #         num_classes=num_classes,
-    #         **kwargs
-        # )
 
     cp_method = get_cp_method(
         method=method,
@@ -370,17 +353,14 @@ def run_wcp_trials(
         **kwargs
     )
 
-
     if shifted_data_module is not None:
         shifted_loader = shifted_data_module.test_dataloader()
     else:
         shifted_loader = None
 
-
     test_loader = data_module.test_dataloader()
 
     cp_method.collect_scores(test_loader, shifted_loader)
-
 
     if hasattr(cp_method, "num_samples"):
         data_size = cp_method.num_samples
@@ -394,13 +374,11 @@ def run_wcp_trials(
     class_widths = {i: [] for i in range(num_classes)}
     class_coverages = {i: [] for i in range(num_classes)}
 
-
-    num_partitions = 8
+    num_partitions = model.canonicalizer.canonicalization_network.num_rotations
     partition_widths = {i: [] for i in range(num_partitions)}
     partition_coverages = {i: [] for i in range(num_partitions)}
 
     num_target_partitions = get_num_bins(partitioning, num_classes)
-
 
     target_partition_coverages = {i: [] for i in range(num_target_partitions)}
 

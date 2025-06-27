@@ -2,7 +2,7 @@
 # MIT License, (c) 2023  (c) 2023 Arnab Mondal
 
 
-from typing import Optional
+from typing import Optional, Any
 
 import dotenv
 import pytorch_lightning as pl
@@ -17,7 +17,7 @@ from prepare import (
     CIFAR100DataModule,
     ClassConditionalCIFARDataModule
 )
-from pytorch_lightning.callbacks import EarlyStopping, ModelCheckpoint
+
 import torch
 
 from cp.cp_utils import get_num_bins
@@ -142,18 +142,40 @@ def get_image_data(dataset_hyperparams: DictConfig) -> pl.LightningDataModule:
     return dataset_classes[dataset_hyperparams.dataset_name](dataset_hyperparams)
 
 
-def discretized_gaussian(size, mean=None, std_dev=None):
+def discretized_gaussian(
+    num_bins: int,
+    mean: Optional[float] = None,
+    std_dev: Optional[float] = None
+) -> np.ndarray:
+    """
+    Creates a discretized 1D Gaussian distribution over a fixed number of bins.
+
+    Args:
+        num_bins (int): Number of discrete bins.
+        mean (Optional[float]): Mean of the Gaussian. Defaults to center of bins.
+        std_dev (Optional[float]): Standard deviation. Defaults to num_bins / 4.
+
+    Returns:
+        np.ndarray: Normalized 1D array representing the discretized Gaussian.
+    """
     if mean is None:
-        mean = size // 2
+        mean = num_bins / 2
     if std_dev is None:
-        std_dev = size / 4
-    
-    x = np.linspace(0, size - 1, size)
-    distribution = np.exp(-(x - mean)**2 / (2 * std_dev**2))
+        std_dev = num_bins / 4
+
+    x = np.linspace(0, num_bins - 1, num_bins)
+    distribution = np.exp(-(x - mean) ** 2 / (2 * std_dev ** 2))
     return distribution / distribution.sum()
 
 
-def get_cifar_dataset(hyperparams, partition="label", version=100, num_rotations=8):
+def get_cifar_dataset(
+    hyperparams: DictConfig, 
+    partition: str = "label", 
+    version: int = 100, 
+    num_rotations: int = 8
+) -> pl.LightningDataModule:
+    """Get the CIFAR dataset based on the hyperparameters."""
+
     if hyperparams.cp_experiments.class_conditional_joint:
 
         
@@ -191,7 +213,20 @@ def get_cifar_dataset(hyperparams, partition="label", version=100, num_rotations
         image_data = get_image_data(hyperparams)
         return image_data
 
+def get_num_labels(hyperparams: Any) -> int:
+    """
+    Infers the number of labels based on the dataset name.
 
+    Assumes CIFAR-10 or CIFAR-100-style naming.
+
+    Args:
+        hyperparams (Any): A config object with `dataset.dataset_name` attribute.
+
+    Returns:
+        int: Number of labels (10 or 100).
+    """
+    name = hyperparams.dataset.dataset_name.lower()
+    return 100 if "100" in name else 10
 
 
 def load_envs(env_file: Optional[str] = None) -> None:
