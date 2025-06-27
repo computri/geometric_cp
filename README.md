@@ -65,7 +65,7 @@ image/
 1. Clone the repository
 ```
 git clone https://github.com/computri/geometric_cp.git
-cd your-repo-name
+cd geometric_cp
 ```
 
 2. Set environment variables, for example: 
